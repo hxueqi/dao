@@ -12,7 +12,7 @@ describe('Token', () => {
 
   beforeEach(async () => {
     const Token = await ethers.getContractFactory('Token')
-    token = await Token.deploy('Dapp University', 'DAPP', '1000000')
+    token = await Token.deploy('Barcelona Beach', 'BCB', '1000000')
 
     accounts = await ethers.getSigners()
     deployer = accounts[0]
@@ -21,8 +21,8 @@ describe('Token', () => {
   })
 
   describe('Deployment', () => {
-    const name = 'Dapp University'
-    const symbol = 'DAPP'
+    const name = 'Barcelona Beach'
+    const symbol = 'BCB'
     const decimals = '18'
     const totalSupply = tokens('1000000')
 
