@@ -28,6 +28,11 @@ contract DAO {
         address creator
     );
 
+    event Vote(
+        uint256 id,
+        address investor
+    );
+
     constructor(Token _token, uint256 _quorum) {
         owner = msg.sender;
         token = _token;
@@ -66,5 +71,25 @@ contract DAO {
                 false);
 
             emit Propose(proposalCount, _amount, _recipient, msg.sender);
+    }
+
+    mapping(address => mapping(uint256 => bool)) public votes;
+    
+    function vote(uint256 _id) external onlyInvestors {
+        //Fetch proposal from mapping by id
+        Proposal storage proposal = proposals[_id];
+
+        //Don't let investors vote twice
+        require(votes[msg.sender][_id] == false, "Investor has already voted");
+
+        //update votes
+        proposal.votes += token.balanceOf(msg.sender);
+
+        //Track that user has voted
+        votes[msg.sender][_id] = true;
+
+        //Emit an event
+        emit Vote(_id, msg.sender);
+        
     }
 }
