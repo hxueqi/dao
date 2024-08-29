@@ -12,7 +12,7 @@ const Navigation = ({ account }) => {
         height="40"
         className="d-inline-block align-top mx-3"
       />
-      <Navbar.Brand href="#">Barcelona Beach</Navbar.Brand>
+      <Navbar.Brand href="#">Barcelona Beach DAO</Navbar.Brand>
       <Navbar.Collapse className="justify-content-end">
         <Navbar.Text>
           {account}
