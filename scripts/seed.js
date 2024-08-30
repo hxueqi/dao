@@ -8,7 +8,7 @@ const hre = require("hardhat");
 const config = require('../src/config.json')
 
 const tokens = (n) => {
-    return ethers.utils.parseUnits(n.toString(), 'ether')
+    return hre.ethers.utils.parseUnits(n.toString(), 'ether')
 }
 
 const ether = tokens
@@ -16,7 +16,7 @@ const ether = tokens
 async function main() {
     console.log(`Fetching accounts & network... \n`);
 
-    const accounts = await ethers.getSigners();
+    const accounts = await hre.ethers.getSigners();
     const funder = accounts[0];
     const investor1 = accounts[1];
     const investor2 = accounts[2];
@@ -26,12 +26,12 @@ async function main() {
     let transaction;
 
      // Fetch network
-    const { chainId } = await ethers.provider.getNetwork()
+    const { chainId } = await hre.ethers.provider.getNetwork()
 
     console.log(`Fetching token and transferring to accounts... \n`);
 
     // Fetch deployed token
-    const token = await ethers.getContractAt('Token', config[chainId].token.address);
+    const token = await hre.ethers.getContractAt('Token', config[chainId].token.address);
     console.log(`Token feched: ${token.address}\n`);
 
     // Send tokens to investors - each one gets 20%
@@ -47,7 +47,7 @@ async function main() {
     console.log(`Fetching dao...\n`);
 
     // Fetch deployed dao
-    const dao = await ethers.getContractAt('DAO', config[chainId].dao.address)
+    const dao = await hre.ethers.getContractAt('DAO', config[chainId].dao.address)
     console.log(`DAO fetched: ${dao.address}\n`);
 
     // Funder sends Ether to DAO treasury
@@ -59,7 +59,7 @@ async function main() {
         // Create Proposal
         transaction = await dao.connect(investor1).createProposal(`Proposal ${i + 1}`, ether(100), recipient.address)
         await transaction.wait()
-
+  
         // Vote 1
         transaction = await dao.connect(investor1).vote(i + 1)
         await transaction.wait()

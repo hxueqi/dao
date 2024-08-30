@@ -4,6 +4,7 @@ import { ethers } from 'ethers'
 
 // Components
 import Navigation from './Navigation';
+import Create from './Create';
 import Proposals from './Proposals';
 import Loading from './Loading';
 
@@ -21,23 +22,24 @@ function App() {
   const [account, setAccount] = useState(null)
 
   const [proposals, setProposals] = useState(null)
-
   const [quorum, setQuorum] = useState(null)
 
-  const [isLoading, setIsLoading] = useState(true) 
+  const [isLoading, setIsLoading] = useState(true)
 
   const loadBlockchainData = async () => {
     // Initiate provider
     const provider = new ethers.providers.Web3Provider(window.ethereum)
+    console.log('appprovider', provider);
+    
     setProvider(provider)
 
-    //Initiate contracts
+    // Initiate contracts
     const dao = new ethers.Contract(config[31337].dao.address, DAO_ABI, provider)
     setDao(dao)
 
-    //Fetch treasury
+    // Fetch treasury balance
     let treasuryBalance = await provider.getBalance(dao.address)
-    treasuryBalance = ethers.utils.formatEther(treasuryBalance, 18)
+    treasuryBalance = ethers.utils.formatUnits(treasuryBalance, 18)
     setTreasuryBalance(treasuryBalance)
 
     // Fetch accounts
@@ -45,15 +47,15 @@ function App() {
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
 
-    // Fetch proposal count
+    // Fetch proposals count
     const count = await dao.proposalCount()
     const items = []
 
-    for (let i = 1; i <= count; i++) {
-      const proposal = await dao.proposals(i+1)
+    for(var i = 0; i < count; i++) {
+      const proposal = await dao.proposals(i + 1)
       items.push(proposal)
     }
-    
+
     setProposals(items)
 
     // Fetch quorum
@@ -78,17 +80,25 @@ function App() {
         <Loading />
       ) : (
         <>
-          <hr />
-            <p className='text-center'>Treasury Balance: {treasuryBalance} ETH</p>
-          <hr />
+          <Create
+            provider={provider}
+            dao={dao}
+            setIsLoading={setIsLoading}
+          />
 
-          <Proposals 
-              provider={provider}
-              dao={dao} 
-              proposals={proposals} 
-              quorum={quorum} 
-              setIsLoading={setIsLoading} 
-            />
+          <hr/>
+
+          <p className='text-center'><strong>Treasury Balance:</strong> {treasuryBalance} ETH</p>
+
+          <hr/>
+
+          <Proposals
+            provider={provider}
+            dao={dao}
+            proposals={proposals}
+            quorum={quorum}
+            setIsLoading={setIsLoading}
+          />
         </>
       )}
     </Container>
